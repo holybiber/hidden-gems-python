@@ -18,20 +18,24 @@ for line in sys.stdin:
     unspos_y = data.get("bot")[1]
     gem = data.get("visible_gems")
     if len(gem) == 0:
-        move = random.choice(["N", "S", "E", "W"])
+        zielpos_x = round(width/2)
+        zielpos_y = round(width/2)
     else:
-        gempos_x = gem[0]["position"][0]
-        gempos_y = gem[0]["position"][1]
-        if gempos_x < unspos_x:
-            move = "W"
-        elif gempos_x > unspos_x:
-            move = "E"
-        elif gempos_y > unspos_y:
-            move = "S"
-        elif gempos_y < unspos_y:
-            move = "N"
+        zielpos_x = gem[0]["position"][0]
+        zielpos_y = gem[0]["position"][1]
 
-        print(f"wir x:{unspos_x}, y:{unspos_y}; Edelstein x: {gempos_x}, y: {gempos_y}", file=sys.stderr, flush=True)
+    if zielpos_x < unspos_x:
+        move = "W"
+    elif zielpos_x > unspos_x:
+        move = "E"
+    elif zielpos_y > unspos_y:
+        move = "S"
+    elif zielpos_y < unspos_y:
+        move = "N"
+    else:
+        move = "WAIT"
+
+    print(f"wir x:{unspos_x}, y:{unspos_y}; Ziel x: {zielpos_x}, y: {zielpos_y}", file=sys.stderr, flush=True)
 
     print(move, flush=True)
 
