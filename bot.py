@@ -4,39 +4,66 @@ import sys, json, random
 random.seed(1)
 first_tick = True
 
-move = "N"
-for line in sys.stdin:
-    data = json.loads(line)
-    if first_tick:
-        config = data.get("config", {})
-        width = config.get("width")
-        height = config.get("height")
-        print(f"Elisa launching on a {width}x{height} map",
-              file=sys.stderr, flush=True)
 
-    unspos_x = data.get("bot")[0]
-    unspos_y = data.get("bot")[1]
-    gem = data.get("visible_gems")
-    if len(gem) == 0:
-        zielpos_x = round(width/2)
-        zielpos_y = round(width/2)
+def entfernung(pos1_x, pos1_y, pos2_x, pos2_y):
+    if pos1_x > pos2_x:
+        abstand_x = pos1_x - pos2_x
     else:
-        zielpos_x = gem[0]["position"][0]
-        zielpos_y = gem[0]["position"][1]
+        abstand_x = pos2_x - pos1_x
 
-    if zielpos_x < unspos_x:
-        move = "W"
-    elif zielpos_x > unspos_x:
-        move = "E"
-    elif zielpos_y > unspos_y:
-        move = "S"
-    elif zielpos_y < unspos_y:
-        move = "N"
+    if pos1_y > pos2_y:
+        abstand_y = pos1_y - pos2_y
     else:
-        move = "WAIT"
+        abstand_y = pos2_y - pos1_y
 
-    print(f"wir x:{unspos_x}, y:{unspos_y}; Ziel x: {zielpos_x}, y: {zielpos_y}", file=sys.stderr, flush=True)
+    return abstand_x + abstand_y
 
-    print(move, flush=True)
 
-    first_tick = False
+def nächstes_ziel(unspos_x, unspos_y, gems):
+    ziel_x = round(width/2)
+    ziel_y = round(width/2)
+    kleinste_entfernung = 1000
+
+    for gem in gems:
+        gem_x = gem["position"][0]
+        gem_y = gem["position"][1]
+        gem_entfernung = entfernung(unspos_x, unspos_y, gem_x, gem_y)
+        if gem_entfernung < kleinste_entfernung:
+            ziel_x = gem_x
+            ziel_y = gem_y
+            kleinste_entfernung = gem_entfernung
+
+    return (ziel_x, ziel_y)
+
+
+if __name__ == '__main__':
+    for line in sys.stdin:
+        data = json.loads(line)
+        if first_tick:
+            config = data.get("config", {})
+            width = config.get("width")
+            height = config.get("height")
+            print(f"Elisa launching on a {width}x{height} map",
+                file=sys.stderr, flush=True)
+
+        unspos_x = data.get("bot")[0]
+        unspos_y = data.get("bot")[1]
+        gems = data.get("visible_gems")
+
+        (zielpos_x, zielpos_y) = nächstes_ziel(unspos_x, unspos_y, gems)
+        if zielpos_x < unspos_x:
+            move = "W"
+        elif zielpos_x > unspos_x:
+            move = "E"
+        elif zielpos_y > unspos_y:
+            move = "S"
+        elif zielpos_y < unspos_y:
+            move = "N"
+        else:
+            move = "WAIT"
+
+        print(f"wir x:{unspos_x}, y:{unspos_y}; Ziel x: {zielpos_x}, y: {zielpos_y}", file=sys.stderr, flush=True)
+
+        print(move, flush=True)
+
+        first_tick = False
