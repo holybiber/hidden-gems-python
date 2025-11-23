@@ -36,9 +36,17 @@ def nächstes_ziel(unspos_x, unspos_y, gems):
     return (ziel_x, ziel_y)
 
 
+def ist_mauer(pos_x, pos_y, mauern):
+    for mauer in mauern:
+        if mauer[0] == pos_x and mauer[1] == pos_y:
+            return True
+    return False
+
+
 if __name__ == '__main__':
     for line in sys.stdin:
         data = json.loads(line)
+
         if first_tick:
             config = data.get("config", {})
             width = config.get("width")
@@ -51,13 +59,13 @@ if __name__ == '__main__':
         gems = data.get("visible_gems")
 
         (zielpos_x, zielpos_y) = nächstes_ziel(unspos_x, unspos_y, gems)
-        if zielpos_x < unspos_x:
+        if zielpos_x < unspos_x and not ist_mauer(unspos_x - 1, unspos_y, data.get('wall')):
             move = "W"
-        elif zielpos_x > unspos_x:
+        elif zielpos_x > unspos_x and not ist_mauer(unspos_x + 1, unspos_y, data.get('wall')):
             move = "E"
-        elif zielpos_y > unspos_y:
+        elif zielpos_y > unspos_y and not ist_mauer(unspos_x , unspos_y+1, data.get('wall')):
             move = "S"
-        elif zielpos_y < unspos_y:
+        elif zielpos_y < unspos_y and not ist_mauer(unspos_x, unspos_y-1, data.get('wall')):
             move = "N"
         else:
             move = "WAIT"
