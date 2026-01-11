@@ -2,7 +2,7 @@
 import sys, json, random
 
 random.seed(1)
-first_tick = True
+erste_runde = True
 
 
 def entfernung(pos1_x, pos1_y, pos2_x, pos2_y):
@@ -20,8 +20,8 @@ def entfernung(pos1_x, pos1_y, pos2_x, pos2_y):
 
 
 def nächstes_ziel(unspos_x, unspos_y, gems):
-    ziel_x = round(width/2)
-    ziel_y = round(width/2)
+    ziel_x = round(breite/2)
+    ziel_y = round(höhe/2)
     kleinste_entfernung = 1000
 
     for gem in gems:
@@ -47,11 +47,11 @@ if __name__ == '__main__':
     for line in sys.stdin:
         data = json.loads(line)
 
-        if first_tick:
+        if erste_runde:
             config = data.get("config", {})
-            width = config.get("width")
-            height = config.get("height")
-            print(f"Elisa launching on a {width}x{height} map",
+            breite = config.get("width")
+            höhe = config.get("height")
+            print(f"Elisa launching on a {breite}x{höhe} map",
                 file=sys.stderr, flush=True)
 
         unspos_x = data.get("bot")[0]
@@ -74,4 +74,4 @@ if __name__ == '__main__':
 
         print(move, flush=True)
 
-        first_tick = False
+        erste_runde = False
