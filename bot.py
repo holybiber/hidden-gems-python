@@ -19,9 +19,11 @@ def entfernung(pos1_x, pos1_y, pos2_x, pos2_y):
     return abstand_x + abstand_y
 
 
+# Bestimme das nächste Ziel (nächster Edelstein)
+# Wenn wir kein Edelstein in Sichtweite haben, geben wir (-1, -1) zurück
 def nächstes_ziel(unspos_x, unspos_y, gems):
-    ziel_x = round(breite/2)
-    ziel_y = round(höhe/2)
+    ziel_x = -1
+    ziel_y = -1
     kleinste_entfernung = 1000
 
     for gem in gems:
@@ -59,7 +61,9 @@ if __name__ == '__main__':
         gems = data.get("visible_gems")
 
         (zielpos_x, zielpos_y) = nächstes_ziel(unspos_x, unspos_y, gems)
-        if zielpos_x < unspos_x and not ist_mauer(unspos_x - 1, unspos_y, data.get('wall')):
+        if zielpos_x == -1 and zielpos_y == -1:
+            move = random.choice(["W", "E", "S", "N"])
+        elif zielpos_x < unspos_x and not ist_mauer(unspos_x - 1, unspos_y, data.get('wall')):
             move = "W"
         elif zielpos_x > unspos_x and not ist_mauer(unspos_x + 1, unspos_y, data.get('wall')):
             move = "E"
